@@ -1,4 +1,4 @@
-/*CatBot - Linking CATIA and Robot
+/*DynamoBot - Linking Dynamo and Robot
 Copyright (C) 2013  Ian Keough (ian@iankeough.com)
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -14,19 +14,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-
-using HybridShapeTypeLib;
-using INFITF;
-using KnowledgewareTypeLib;
-using MECMOD;
+using Dynamo.Connectors;
+using Dynamo.Nodes;
+using Microsoft.FSharp.Collections;
 using RobotOM;
+using Value = Dynamo.FScheme.Value;
 
-namespace CatBot
+namespace Dynamo.Analysis
 {
 	public enum SectionType : byte
 	{
@@ -46,7 +44,7 @@ namespace CatBot
 		shear = 3
 	}
 	
-	class Program
+	class DynamoBot
 	{
 		static IRobotApplication m_robot;
 		static IRobotNodeServer m_nodes;
@@ -75,9 +73,9 @@ namespace CatBot
 		static double m_stressTolerance = .6 * 248211262.8;	//36ksi(steel) -> Pascal * .6 (per ASD)
 		static double m_windx, m_windy, m_windz;	//the wind vector
 		
-		static SPATypeLib.SPAWorkbench m_spaWorkBench;
-		static SPATypeLib.Measurable m_meas;
-		static SPATypeLib.Measurable m_meas_pt;
+        //static SPATypeLib.SPAWorkbench m_spaWorkBench;
+        //static SPATypeLib.Measurable m_meas;
+        //static SPATypeLib.Measurable m_meas_pt;
 		
 		static string m_errorMessage = "";
 		
@@ -1466,321 +1464,412 @@ namespace CatBot
 
 	}
 
+    [NodeName("DynamoBotSectionType")]
+    [NodeCategory(BuiltinNodeCategories.ANALYSIS)]
+    [NodeDescription("Choose a section type to be used with analytical members.")]
+    public class SectionTypeNode : dynEnum
+    {
+        public SectionTypeNode()
+        {
+            InPortData.Add(new PortData("n", "A description.", typeof(object)));
+
+            WireToEnum(Enum.GetValues(typeof(SectionType)));
+        }
+    }
+
+    [NodeName("DynamoBotPlateType")]
+    [NodeCategory(BuiltinNodeCategories.ANALYSIS)]
+    [NodeDescription("Choose a plate type to be used with analytical members.")]
+    public class PlateTypeNode : dynEnum
+    {
+        public PlateTypeNode()
+        {
+            InPortData.Add(new PortData("n", "A description.", typeof(object)));
+
+            WireToEnum(Enum.GetValues(typeof(PlateType)));
+        }
+    }
+
+    [NodeName("DynamoBot")]
+    [NodeCategory(BuiltinNodeCategories.ANALYSIS)]
+    [NodeDescription("Creates a structural analytical link with Robot.")]
+    public class DynamoRobot : dynNodeWithOneOutput
+    {
+        public DynamoRobot()
+        {
+            InPortData.Add(new PortData("nodes", "The point(s) from which to define analytical nodes.", typeof(Point3D)));
+            InPortData.Add(new PortData("bars", "The curves from which to define analytical bars.", typeof(Curve3D)));
+            OutPortData.Add(new PortData("results", "The analytical results.", typeof(object)));
+
+            NodeUI.RegisterAllPorts();
+        }
+
+        public override FScheme.Value Evaluate(FSharpList<FScheme.Value> args)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 	//!The Node Class
-	public class Node
+    [NodeName("DynamoBotNode")]
+    [NodeCategory(BuiltinNodeCategories.ANALYSIS)]
+    [NodeDescription("Creates a structural analytical node in Robot.")]
+	public class Node : dynNodeWithOneOutput
 	{
 		#region private members
 		private double m_x;
 		private double m_y;
 		private double m_z;
 		
-		private double m_dispX;
-		private double m_dispY;
-		private double m_dispZ;
+        //private double m_dispX;
+        //private double m_dispY;
+        //private double m_dispZ;
 		
-		private string m_catID;
-		private int m_robotID;
-		private int m_fixed;
+        //private string m_catID;
+        //private int m_robotID;
+		private bool m_fixed = false;
 		
 		#endregion private members
 		
 		#region properties
 		//*!The X coordinate of the node.
-		public double X
-		{
-			get
-			{
-				return m_x;
-			}
-			set
-			{
-				m_x = (double)value;
-			}
-		}
+        //public double X
+        //{
+        //    get
+        //    {
+        //        return m_x;
+        //    }
+        //    set
+        //    {
+        //        m_x = (double)value;
+        //    }
+        //}
 		
-		//!The Y coordinate of the node.
-		public double Y
-		{
-			get
-			{
-				return m_y;
-			}
-			set
-			{
-				m_y = (double)value;
-			}
-		}
+        ////!The Y coordinate of the node.
+        //public double Y
+        //{
+        //    get
+        //    {
+        //        return m_y;
+        //    }
+        //    set
+        //    {
+        //        m_y = (double)value;
+        //    }
+        //}
 		
-		//!The Z coordinate of the node.
-		public double Z
-		{
-			get
-			{
-				return m_z;
-			}
-			set
-			{
-				m_z = (double)value;
-			}
-		}
+        ////!The Z coordinate of the node.
+        //public double Z
+        //{
+        //    get
+        //    {
+        //        return m_z;
+        //    }
+        //    set
+        //    {
+        //        m_z = (double)value;
+        //    }
+        //}
 		
-		//!The corresponding catiaID
-		public string catiaID
-		{
-			get
-			{
-				return m_catID;
-			}
-			set
-			{
-				m_catID = (string)value;
-			}
-		}
+        ////!The corresponding catiaID
+        //public string catiaID
+        //{
+        //    get
+        //    {
+        //        return m_catID;
+        //    }
+        //    set
+        //    {
+        //        m_catID = (string)value;
+        //    }
+        //}
 		
-		//!The corresponding robotID
-		public int robotID
-		{
-			get
-			{
-				return m_robotID;
-			}
-			set
-			{
-				m_robotID = (int)value;
-			}
-		}
+        ////!The corresponding robotID
+        //public int robotID
+        //{
+        //    get
+        //    {
+        //        return m_robotID;
+        //    }
+        //    set
+        //    {
+        //        m_robotID = (int)value;
+        //    }
+        //}
 		
-		//!The analyzed displacement in the X direction.
-		public double displaceX
-		{
-			get
-			{
-				return m_dispX;
-			}
-			set
-			{
-				m_dispX = (double)value;
-			}
-		}
+        ////!The analyzed displacement in the X direction.
+        //public double displaceX
+        //{
+        //    get
+        //    {
+        //        return m_dispX;
+        //    }
+        //    set
+        //    {
+        //        m_dispX = (double)value;
+        //    }
+        //}
 		
-		//!The analyzed displacement in the Y direction.
-		public double displaceY
-		{
-			get
-			{
-				return m_dispY;
-			}
-			set
-			{
-				m_dispY = (double)value;
-			}
-		}
+        ////!The analyzed displacement in the Y direction.
+        //public double displaceY
+        //{
+        //    get
+        //    {
+        //        return m_dispY;
+        //    }
+        //    set
+        //    {
+        //        m_dispY = (double)value;
+        //    }
+        //}
 		
-		//!The analyzed displacement in the Z direction.
-		public double displaceZ
-		{
-			get
-			{
-				return m_dispZ;
-			}
-			set
-			{
-				m_dispZ = (double)value;
-			}
-		}
+        ////!The analyzed displacement in the Z direction.
+        //public double displaceZ
+        //{
+        //    get
+        //    {
+        //        return m_dispZ;
+        //    }
+        //    set
+        //    {
+        //        m_dispZ = (double)value;
+        //    }
+        //}
 		
-		//!The fixity of the node
-		public int Fixed
-		{
-			get
-			{
-				return m_fixed;
-			}
-		}
+        ////!The fixity of the node
+        //public int Fixed
+        //{
+        //    get
+        //    {
+        //        return m_fixed;
+        //    }
+        //}
 		#endregion properties
 		
 		//!The node constructor
-		public Node(string catNode, int robNode, double x, double y, double z, double dispx, double dispy, double dispz, int fixity)
+		public Node()
 		{
-			m_x = x;
-			m_y = y;
-			m_z = z;
-			m_dispX = dispx;
-			m_dispY = dispy;
-			m_dispZ = dispz;
-			m_fixed = fixity;
+            //m_x = x;
+            //m_y = y;
+            //m_z = z;
+            //m_dispX = dispx;
+            //m_dispY = dispy;
+            //m_dispZ = dispz;
+            //m_fixed = fixity;
 			
-			m_catID = catNode;
-			m_robotID = robNode;
+            //m_catID = catNode;
+            //m_robotID = robNode;
+
+            InPortData.Add(new PortData("x", "The X location.", typeof(double)));
+            InPortData.Add(new PortData("y", "The Y location.", typeof(double)));
+            InPortData.Add(new PortData("z", "The Z location.", typeof(double)));
+            InPortData.Add(new PortData("fix", "Should the node be fixed?", typeof(bool)));
+
+            OutPortData.Add(new PortData("node", "The analytical node", typeof(bool)));
 		}
+
+        public override FScheme.Value Evaluate(FSharpList<FScheme.Value> args)
+        {
+            m_x = (double)((Value.Number)args[0]).Item;
+            m_y = (double)((Value.Number)args[1]).Item;
+            m_z = (double)((Value.Number)args[2]).Item;
+            m_fixed = Convert.ToBoolean((double)((Value.Number)args[0]).Item);
+
+            throw new NotImplementedException("Construct a node.");
+        }
 	}
 	
 	//!The Bar Class
-	public class Bar
+    [NodeName("DynamoBotBar")]
+    [NodeCategory(BuiltinNodeCategories.ANALYSIS)]
+    [NodeDescription("Creates a structural analytical bar in Robot.")]
+	public class Bar : dynNodeWithOneOutput
 	{
 		#region private members
 		
-		private string m_catStart;
-		private string m_catEnd;
-		private int m_robStart;
-		private int m_robEnd;
-		private int m_robId;
-		private string m_catId;
-		private double m_stressAxial;
+        //private string m_catStart;
+        //private string m_catEnd;
+        //private int m_robStart;
+        //private int m_robEnd;
+        //private int m_robId;
+        //private string m_catId;
+        //private double m_stressAxial;
 		private double m_diameter;
-		private SectionType m_sectionType;
-		private double m_sectionThickness;
-		private string m_endRelease;
+        private SectionType m_sectionType;
+        private double m_sectionThickness;
+        private string m_endRelease;
 		
 		#endregion private members
 		
 		#region properties
 		//!The corresponding Catia start node.
-		public string CatiaStart
-		{
-			get
-			{
-				return m_catStart;
+        //public string CatiaStart
+        //{
+        //    get
+        //    {
+        //        return m_catStart;
 				
-			}
-			set
-			{
-				m_catStart = (string)value;
-			}
-		}
+        //    }
+        //    set
+        //    {
+        //        m_catStart = (string)value;
+        //    }
+        //}
 		
-		//!The corresponding Catia end node.
-		public string CatiaEnd
-		{
-			get
-			{
-				return m_catEnd;
-			}
-			set
-			{
-				m_catEnd = (string)value;
-			}
-		}
+        ////!The corresponding Catia end node.
+        //public string CatiaEnd
+        //{
+        //    get
+        //    {
+        //        return m_catEnd;
+        //    }
+        //    set
+        //    {
+        //        m_catEnd = (string)value;
+        //    }
+        //}
 		
-		//!The corrseponding Robot start node.
-		public int RobotStart
-		{
-			get
-			{
-				return m_robStart;
-			}
-			set
-			{
-				m_robStart = (int)value;
-			}
-		}
+        ////!The corrseponding Robot start node.
+        //public int RobotStart
+        //{
+        //    get
+        //    {
+        //        return m_robStart;
+        //    }
+        //    set
+        //    {
+        //        m_robStart = (int)value;
+        //    }
+        //}
 		
-		//!The corresponding Robot end node.
-		public int RobotEnd
-		{
-			get
-			{
-				return m_robEnd;
-			}
-			set
-			{
-				m_robEnd = (int)value;
-			}
-		}
+        ////!The corresponding Robot end node.
+        //public int RobotEnd
+        //{
+        //    get
+        //    {
+        //        return m_robEnd;
+        //    }
+        //    set
+        //    {
+        //        m_robEnd = (int)value;
+        //    }
+        //}
 		
-		//!The analyzed axial stress in the bar.
-		public double StressAxial
-		{
-			get
-			{
-				return m_stressAxial;
-			}
-			set
-			{
-				m_stressAxial = (double)value;
-			}
-		}
+        ////!The analyzed axial stress in the bar.
+        //public double StressAxial
+        //{
+        //    get
+        //    {
+        //        return m_stressAxial;
+        //    }
+        //    set
+        //    {
+        //        m_stressAxial = (double)value;
+        //    }
+        //}
 		
-		//!The corresponding Robot Id of the bar.
-		public int RobotID
-		{
-			get
-			{
-				return m_robId;	
-			}
-			set
-			{
-				m_robId = (int)value;
-			}
-		}
+        ////!The corresponding Robot Id of the bar.
+        //public int RobotID
+        //{
+        //    get
+        //    {
+        //        return m_robId;	
+        //    }
+        //    set
+        //    {
+        //        m_robId = (int)value;
+        //    }
+        //}
 		
-		//!The corresponding CatiaID of the bar.
-		public string CatiaID
-		{
-			get
-			{
-				return m_catId;
-			}
-			set
-			{
-				m_catId = (string)value;
-			}
-		}
+        ////!The corresponding CatiaID of the bar.
+        //public string CatiaID
+        //{
+        //    get
+        //    {
+        //        return m_catId;
+        //    }
+        //    set
+        //    {
+        //        m_catId = (string)value;
+        //    }
+        //}
 		
 		//!The diameter of the bar
-		public double Diameter
-		{
-			get
-			{
-				return m_diameter;
-			}
-		}
+        //public double Diameter
+        //{
+        //    get
+        //    {
+        //        return m_diameter;
+        //    }
+        //}
 		
-		//!The section thickness.
-		public double SectionThickness
-		{
-			get
-			{
-				return m_sectionThickness;
-			}
-		}
+        ////!The section thickness.
+        //public double SectionThickness
+        //{
+        //    get
+        //    {
+        //        return m_sectionThickness;
+        //    }
+        //}
 		
-		//!The section type - bar or plate.
-		public SectionType SectionType
-		{
-			get
-			{
-				return m_sectionType;
-			}
-		}
+        ////!The section type - bar or plate.
+        //public SectionType SectionType
+        //{
+        //    get
+        //    {
+        //        return m_sectionType;
+        //    }
+        //}
 		
-		public string EndRelease
-		{
-			get
-			{
-				return m_endRelease;
-			}
-		}
+        //public string EndRelease
+        //{
+        //    get
+        //    {
+        //        return m_endRelease;
+        //    }
+        //}
 		#endregion
 		
 		//!The Bar constructor.
-		public Bar(string _catId, int _robId, string _catStart, string _catEnd, int _robStart, int _robEnd, double _axial, double _diameter, SectionType _sectionType, double _thickness, string _endRelease)
+		public Bar()
 		{
-			m_catId 	= _catId;
-			m_catStart 	= _catStart;
-			m_catEnd	= _catEnd;
-			m_robId		= _robId;
-			m_robStart  = _robStart;
-			m_robEnd	= _robEnd;
-			m_stressAxial = _axial;
-			m_diameter	= _diameter;
-			m_sectionType = _sectionType;
-			m_sectionThickness = _thickness;
-			m_endRelease = _endRelease;
+            //m_catId 	= _catId;
+            //m_catStart 	= _catStart;
+            //m_catEnd	= _catEnd;
+            //m_robId		= _robId;
+            //m_robStart  = _robStart;
+            //m_robEnd	= _robEnd;
+            //m_stressAxial = _axial;
+            //m_diameter	= _diameter;
+            //m_sectionType = _sectionType;
+            //m_sectionThickness = _thickness;
+            //m_endRelease = _endRelease;
+
+            InPortData.Add(new PortData("n", "The diameter of the bar.", typeof(double)));
+            InPortData.Add(new PortData("n", "The section type of the bar.", typeof(PlateType)));
+            InPortData.Add(new PortData("n", "The section thickness of the bar.", typeof(double)));
+            InPortData.Add(new PortData("n", "The the end release of the bar.", typeof(string)));
+            OutPortData.Add(new PortData("bar", "The analytical bar.", typeof(Bar)));
+
+            NodeUI.RegisterAllPorts();
 		}
+
+        public override Value Evaluate(FSharpList<Value> args)
+        {
+            m_diameter = ((Value.Number)args[0]).Item;
+            m_sectionType = (SectionType)((Value.Container)args[0]).Item;
+            m_sectionThickness = ((Value.Number)args[0]).Item;
+            m_endRelease = ((Value.String)args[0]).Item; 
+
+            throw new NotImplementedException("Construct a bar");
+        }
+
 	}
 	
 	//!The Plate Class
+    [NodeName("DynamoBotPlate")]
+    [NodeCategory(BuiltinNodeCategories.ANALYSIS)]
+    [NodeDescription("Creates a structural analytical plate in Robot.")]
 	public class Plate
 	{
 		#region private members

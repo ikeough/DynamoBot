@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatBot", "CatBot.csproj", "{81621DA3-9BCF-4DB6-BE81-3C17D32779CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamoBot", "DynamoBot.csproj", "{81621DA3-9BCF-4DB6-BE81-3C17D32779CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
