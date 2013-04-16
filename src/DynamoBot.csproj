@@ -58,57 +58,9 @@
     <Compile Include="CatBotProgram.cs" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="HybridShapeTypeLib">
-      <Guid>{87EE735C-DF70-11D1-8556-0060941979CE}</Guid>
-      <VersionMajor>0</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-    <COMReference Include="INFITF">
-      <Guid>{14F197B2-0771-11D1-A5B1-00A0C9575177}</Guid>
-      <VersionMajor>0</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-    <COMReference Include="KnowledgewareTypeLib">
-      <Guid>{0770412C-722E-11D2-8378-0060941974FF}</Guid>
-      <VersionMajor>0</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-    <COMReference Include="MECMOD">
-      <Guid>{0D90A5C9-3B08-11D1-A26C-0000F87546FD}</Guid>
-      <VersionMajor>0</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-    <COMReference Include="PARTITF">
-      <Guid>{D8431606-E4B5-11D1-A5D3-00A0C95752ED}</Guid>
-      <VersionMajor>0</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
     <COMReference Include="RobotOM">
       <Guid>{F3A37BD0-AA2D-11D2-9844-0080C86BE4DF}</Guid>
       <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-    <COMReference Include="SPATypeLib">
-      <Guid>{9143C8CC-1474-11D4-9461-006094EB3826}</Guid>
-      <VersionMajor>0</VersionMajor>
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>tlbimp</WrapperTool>
