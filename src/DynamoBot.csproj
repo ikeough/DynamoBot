@@ -61,12 +61,15 @@
   <ItemGroup>
     <Reference Include="DragCanvas">
       <HintPath>..\..\Dynamo\bin\Debug\DragCanvas.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="DynamoElements">
       <HintPath>..\..\Dynamo\bin\Debug\DynamoElements.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="FScheme">
       <HintPath>..\..\Dynamo\bin\Debug\FScheme.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="FSchemeInterop">
       <HintPath>..\..\Dynamo\bin\Debug\FSchemeInterop.dll</HintPath>

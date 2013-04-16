@@ -14,22 +14,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using Dynamo.Connectors;
-using Dynamo.Nodes;
-using Dynamo.Utilities;
 using Microsoft.FSharp.Collections;
-using RobotOM;
-using Dynamo.FSchemeInterop;
+using Dynamo.Analysis;
 
 using Value = Dynamo.FScheme.Value;
 
-namespace Dynamo.Analysis
+namespace Dynamo.Nodes
 {
     //static List<int> m_failedNodes = new List<int>();
     //static List<int> m_failedBars = new List<int>();
@@ -108,23 +100,15 @@ namespace Dynamo.Analysis
     {
         public DynamoRobotEngine()
         {
-            InPortData.Add(new PortData("nodes", "The point(s) from which to define analytical nodes.", typeof(object)));
-            InPortData.Add(new PortData("bars", "The curves from which to define analytical bars.", typeof(object)));
-            InPortData.Add(new PortData("plates", "The faces from which to define analytical plates.", typeof(object)));
-            InPortData.Add(new PortData("path", "The path to the results file.", typeof(string)));
-            OutPortData.Add(new PortData("results", "The analytical results.", typeof(object)));
+            OutPortData.Add(new PortData("eng", "The Robot Structural Analysis engine.", typeof(object)));
 
             NodeUI.RegisterAllPorts();
-
         }
 
         public override FScheme.Value Evaluate(FSharpList<FScheme.Value> args)
         {
-            var nodes = (args[0] as Value.List).Item;
-            var bars = (args[1] as Value.List).Item;
-            var plates = (args[2] as Value.List).Item;
-
-            throw new NotImplementedException();
+            RobotEngine engine = new RobotEngine();
+            return Value.NewContainer(engine);
         }
     }
 
