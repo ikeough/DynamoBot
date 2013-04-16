@@ -31,22 +31,10 @@ using Value = Dynamo.FScheme.Value;
 
 namespace Dynamo.Analysis
 {
-	class RobotLink
-	{
-
-		static List<int> m_failedNodes = new List<int>();
-		static List<int> m_failedBars = new List<int>();
-		static double m_displacementTolerance = 0.0;	//13mm mm->M
-		static double m_stressTolerance = .6 * 248211262.8;	//36ksi(steel) -> Pascal * .6 (per ASD)
-		static double m_windx, m_windy, m_windz;	//the wind vector
-
-		static string m_errorMessage = "";
-
-		
-
-
-
-	}
+    //static List<int> m_failedNodes = new List<int>();
+    //static List<int> m_failedBars = new List<int>();
+    //static double m_displacementTolerance = 0.0;	//13mm mm->M
+    //static double m_stressTolerance = .6 * 248211262.8;	//36ksi(steel) -> Pascal * .6 (per ASD)
 
     [NodeName("DynamoBotSectionType")]
     [NodeCategory(BuiltinNodeCategories.ANALYSIS)]
@@ -87,17 +75,22 @@ namespace Dynamo.Analysis
             InPortData.Add(new PortData("nodes", "A list of analytical nodes.", typeof(object)));
             InPortData.Add(new PortData("bars", "A list of analytical bars.", typeof(object)));
             InPortData.Add(new PortData("plates", "A list of analytical plates.", typeof(object)));
-
             OutPortData.Add(new PortData("model", "The analytical model.", typeof(object)));
+
+            NodeUI.RegisterAllPorts();
         }
 
         public override FScheme.Value Evaluate(FSharpList<FScheme.Value> args)
         {
             _eng = (RobotEngine)((Value.Container)args[0]).Item;
 
-            var nodes;
-            var bars;
-            var plates;
+            var nodes_in = ((Value.List)args[1]).Item;
+            var bars_in = ((Value.List) args[2]).Item;
+            var plates_in = ((Value.List)args[3]).Item;
+
+            var nodes = nodes_in.Select(x => ((AnalyticalNode)((Value.Container) x).Item));
+            var bars = bars_in.Select(x => ((AnalyticalBar)((Value.Container)x).Item));
+            var plates = plates_in.Select(x => ((AnalyticalPlate)((Value.Container)x).Item));
 
             RobotModel model = new RobotModel(_eng.Application, nodes, bars, plates);
 
@@ -136,7 +129,7 @@ namespace Dynamo.Analysis
     }
 
 	//!The Node Class
-    [NodeName("DynamoBotNode")]
+    [NodeName("DynamoAnalyticalNode")]
     [NodeCategory(BuiltinNodeCategories.ANALYSIS)]
     [NodeDescription("Creates a structural analytical node in Robot.")]
 	public class DynAnalyticalNode : dynNodeWithOneOutput
@@ -165,7 +158,7 @@ namespace Dynamo.Analysis
 	}
 	
 	//!The Bar Class
-    [NodeName("DynamoBotBar")]
+    [NodeName("DynamoAnalyticalBar")]
     [NodeCategory(BuiltinNodeCategories.ANALYSIS)]
     [NodeDescription("Creates a structural analytical bar in Robot.")]
 	public class DynAnalyticalBar : dynNodeWithOneOutput
@@ -179,17 +172,17 @@ namespace Dynamo.Analysis
             InPortData.Add(new PortData("n", "The section type of the bar.", typeof(SectionType)));
             InPortData.Add(new PortData("n", "The section thickness of the bar.", typeof(double)));
             InPortData.Add(new PortData("n", "The the end release of the bar.", typeof(string)));
-            OutPortData.Add(new PortData("bar", "The analytical bar.", typeof(Bar)));
+            OutPortData.Add(new PortData("bar", "The analytical bar.", typeof(AnalyticalBar)));
 
             NodeUI.RegisterAllPorts();
 		}
 
         public override Value Evaluate(FSharpList<Value> args)
         {
-            var start = ((Value.Container)args[0]).Item;
-            var end = ((Value.Container)args[1]).Item;
+            var start = (AnalyticalNode)((Value.Container)args[0]).Item;
+            var end = (AnalyticalNode)((Value.Container)args[1]).Item;
             var diameter = ((Value.Number)args[2]).Item;
-            var sectionType = ((Value.Container)args[3]).Item;
+            var sectionType = (SectionType)((Value.Container)args[3]).Item;
             var thickness = ((Value.Number)args[4]).Item;
             var endRelease = ((Value.String)args[5]).Item; 
 
@@ -199,7 +192,7 @@ namespace Dynamo.Analysis
 	}
 	
 	//!The Plate Class
-    [NodeName("DynamoBotPlate")]
+    [NodeName("DynamoAnalyticalPlate")]
     [NodeCategory(BuiltinNodeCategories.ANALYSIS)]
     [NodeDescription("Creates a structural analytical plate in Robot.")]
 	public class DynAnalyticalPlate

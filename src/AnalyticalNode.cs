@@ -19,17 +19,17 @@ namespace Dynamo.Analysis
         public double Z { get; private set; }
 
         //!The fixity of the node
-        public int Fixed { get; private set; }
+        public bool IsFixed { get; private set; }
 
         #endregion properties
 
         //!The node constructor
-        public AnalyticalNode(double x, double y, double z, int fixity)
+        public AnalyticalNode(double x, double y, double z, bool isFixed)
         {
             X = x;
             Y = y;
             Z = z;
-            Fixed = fixity;
+            IsFixed = isFixed;
         }
     }
 }

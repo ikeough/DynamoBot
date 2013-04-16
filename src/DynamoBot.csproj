@@ -4,7 +4,7 @@
     <ProjectGuid>{81621DA3-9BCF-4DB6-BE81-3C17D32779CD}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>Dynamo.Analysis</RootNamespace>
     <AssemblyName>DynamoBot</AssemblyName>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -49,12 +49,19 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>..\bin\</OutputPath>
     <PlatformTarget>x64</PlatformTarget>
+    <RegisterForComInterop>false</RegisterForComInterop>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\bin\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="DragCanvas">
+      <HintPath>..\..\Dynamo\bin\Debug\DragCanvas.dll</HintPath>
+    </Reference>
     <Reference Include="DynamoElements">
       <HintPath>..\..\Dynamo\bin\Debug\DynamoElements.dll</HintPath>
     </Reference>
